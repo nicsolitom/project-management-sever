@@ -16,12 +16,12 @@ const User = require("../models/User.model");
 
 
 router.post("/signup", (req, res) => {
-  const { username, email, password } = req.body;
+  const { name, email, password } = req.body;
 
-  if (!username) {
+  if (!email) {
     return res
       .status(400)
-      .json({ errorMessage: "Please provide your username." });
+      .json({ errorMessage: "Please provide your email." });
   }
 
   if (password.length < 8) {
@@ -43,7 +43,7 @@ router.post("/signup", (req, res) => {
   */
 
   // Search the database for a user with the username submitted in the form
-  User.findOne({ name: username }).then((found) => {
+  User.findOne({ email }).then((found) => {
     // If the user is found, send the message username is taken
     if (found) {
       return res.status(400).json({ errorMessage: "Username already taken." });
@@ -57,7 +57,7 @@ router.post("/signup", (req, res) => {
         // Create a user and save it in the database
         return User.create({
           email,
-          name: username,
+          name,
           password: hashedPassword,
         });
       })
@@ -80,12 +80,12 @@ router.post("/signup", (req, res) => {
 });
 
 router.post("/login", (req, res, next) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username) {
+  if (!email) {
     return res
       .status(400)
-      .json({ errorMessage: "Please provide your username." });
+      .json({ errorMessage: "Please provide your email." });
   }
 
   // Here we use the same logic as above
@@ -97,7 +97,7 @@ router.post("/login", (req, res, next) => {
   }
 
   // Search the database for a user with the username submitted in the form
-  User.findOne({ name: username })
+  User.findOne({ email })
     .then((user) => {
       // If the user isn't found, send the message that user provided wrong credentials
       if (!user) {
